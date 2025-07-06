@@ -1,0 +1,155 @@
+xinu make
+I am in for loop Absyn.MethodDecl@3e3abc88
+i am in methoddecl visiting print
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I am in for loop Absyn.Formal@e9e54c2
+i am in formaldecl
+I stored params in the record
+I am in for loop Absyn.Formal@e9e54c2
+i am in formaldecl
+param type: 
+I am in for loop Absyn.MethodDecl@65ab7765
+i am in methoddecl visiting printint
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I am in for loop Absyn.Formal@1b28cdfa
+i am in formaldecl
+I stored params in the record
+I am in for loop Absyn.Formal@1b28cdfa
+i am in formaldecl
+param type: 
+I am in for loop Absyn.MethodDecl@eed1f14
+i am in methoddecl visiting sleep
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I am in for loop Absyn.Formal@1b28cdfa
+i am in formaldecl
+I stored params in the record
+I am in for loop Absyn.Formal@1b28cdfa
+i am in formaldecl
+param type: 
+I am in for loop Absyn.MethodDecl@7229724f
+i am in methoddecl visiting readint
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I stored params in the record
+I am in for loop Absyn.MethodDecl@4c873330
+i am in methoddecl visiting println
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I stored params in the record
+I am in for loop Absyn.MethodDecl@119d7047
+i am in methoddecl visiting yield
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I stored params in the record
+I am in for loop Absyn.MethodDecl@776ec8df
+i am in methoddecl visiting threadCreate
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I am in for loop Absyn.Formal@4eec7777
+i am in formaldecl
+I stored params in the record
+I am in for loop Absyn.Formal@4eec7777
+i am in formaldecl
+param type: 
+I am in for loop ( OBJECT:String:arg ) -> void:print
+I am in for loop ( int:arg ) -> void:printint
+I am in for loop ( int:arg ) -> void:sleep
+I am in for loop ( ) -> int:readint
+I am in for loop ( ) -> void:println
+I am in for loop ( ) -> void:yield
+I am in for loop ( OBJECT:Thread:arg ) -> void:threadCreate
+    
+I am in for loop Absyn.ClassDecl@506e1b77
+attempting to accept Parse2
+I am in visit class decl
+created class object: Parse2
+accepted hereParse2
+accepted Parse2
+I finished pass one
+I am in for loop Absyn.ClassDecl@506e1b77
+I am in the middle of pass two
+I am in for loop Absyn.MethodDecl@4fca772d
+I am adding mainto the currmethods
+i am in methoddecl visiting main
+I checked if the method already exists
+I got the return type
+I AM WRONG
+I put the method in the current class
+I am in for loop Absyn.Formal@4769b07b
+i am in formaldecl
+I stored params in the record
+I am in for loop Absyn.Formal@4769b07b
+i am in formaldecl
+param type: 
+I put the methods in the record
+I am done with pass two
+I am in for loop Absyn.ClassDecl@506e1b77
+parent is null, skipping
+i am done with pass 3
+I am in for loop Absyn.ClassDecl@506e1b77
+I am in for loop Absyn.MethodDecl@4fca772d
+I am in for loop Absyn.Formal@4769b07b
+finished checking parameters
+I am in for loop Absyn.VarDecl@17a7cec2
+null
+   
+   
+int
+finished checking statements
+finished checking parametersmain
+finished checking main
+Type Checker Has Finished
+Program(
+ AbstractList(
+  ClassDecl(Parse2 null
+   AbstractList()
+   AbstractList(
+    MethodDecl(public_static_void main
+     AbstractList(
+      Formal(ArrayType(IdentifierType(String)) args))
+     AbstractList(
+      VarDecl(IntegerType b null 
+       INT))
+     AbstractList()
+     IntegerLiteral(0)
+     FUNCTION(main
+      OBJECT(Parse2)
+      RECORD(
+       FIELD(0 args
+        ARRAY(
+         OBJECT(String))))
+      VOID)))
+   CLASS(Parse2
+    null
+    RECORD(
+     FIELD(0 main
+      FUNCTION(main
+       OBJECT(Parse2)
+       RECORD(
+        FIELD(0 args
+         ARRAY(
+          OBJECT(String))))
+       VOID)))
+    RECORD(
+     FIELD(0 b
+      INT))
+    OBJECT(Parse2
+     RECORD()
+     RECORD())))))

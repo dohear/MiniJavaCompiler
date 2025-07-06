@@ -1,0 +1,10 @@
+    int[] array3 = new int[5];
+    
+    int[] emptyArray = {};
+    int[] array5 = {1, 2, 3, 4, 5}; 
+
+    int[][] multiArray3 = new int[3][4];
+    int[][] multiArray4 = {{1, 2}, {3, 4}, {5, 6}};
+
+    int b;
+    b[0] = 5;
