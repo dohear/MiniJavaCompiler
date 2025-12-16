@@ -1,17 +1,16 @@
 # MiniJava Compiler
 
-This is a complete frontend for a MiniJava Compiler written in Java targeting specifically the Embedded Xinu Operating System. The front end includes a tokenizer, parser/syntactic analyzer, and a four-pass type checker. This was written for my compiler course taken at Marquette University (COSC 4400, fall 24) as a part of a group effort alongside Erik Gutierrez, Varisha Asim, and myself with guidance from our professor Dr.Jack Forden. 
+This is a complete frontend for a MiniJava Compiler written in Java targeting specifically the Embedded Xinu Operating System. The front end includes a tokenizer, parser/syntactic analyzer, and a four-pass type checker. This was written for my compiler course taken at Marquette University (COSC 4400, fall 24) as a part of a group effort alongside Erik Gutierrez, Varisha Asim, and myself with guidance from our professor Dr.Jack Forden.
 
 ## Language Support
 
 #### Object-Oriented Programming
 
 - Class declarations with single inheritance
-- Method definitions 
+- Method definitions
 - Field declarations and access
 - Object instantiation with new operator
 - Method overriding with type compatibility checking
-
 
 #### Type System
 
@@ -21,7 +20,6 @@ This is a complete frontend for a MiniJava Compiler written in Java targeting sp
 - Null references with type-safe assignment
 - Comprehensive type checking
 
-
 #### Control Structures
 
 - Conditional statements (if/else)
@@ -29,23 +27,20 @@ This is a complete frontend for a MiniJava Compiler written in Java targeting sp
 - Block statements with proper scoping
 - Assignment statements
 
-
 #### Expressions
 
-- Arithmetic operations (+, -, *, /, unary -)
+- Arithmetic operations (+, -, \*, /, unary -)
 - Logical operations (&&, ||, !)
 - Comparison operations (<, >, ==, !=)
 - Array indexing and multi-dimensional arrays
 - Method calls with parameter type checking
 - Field access with inheritance resolution
 
-
 #### Threading Support
 
 - Special Thread class declarations
 - Void method declarations (for run methods)
 - Thread creation and management
-
 
 #### Xinu Operating System Integration
 
@@ -59,18 +54,13 @@ This is a complete frontend for a MiniJava Compiler written in Java targeting sp
 - Parser: LL(k) (top down) parser built with JavaCC from a provided grammar specification
 - Abstract Syntax Tree: Visitor pattern implementation with 50+ AST node types
 - Type Checker; Four-pass type checker with inheritance and scope management
-    - Pass 1: class registration
-    - Pass 2: inharitance definition
-    - Pass 3: inheritance validation
-    - Pass 4: method body analysis
-
-## Build Requirements
-
-- JDK8 or higher
-- JavaCC (Java Compiler Compiler) - for parser generation
-- GNU Make
+  - Pass 1: class registration
+  - Pass 2: inharitance definition
+  - Pass 3: inheritance validation
+  - Pass 4: method body analysis
 
 ## Project Structure
+
 ```
 minijava-compiler/
 ├── Makefile                       # Build configuration
@@ -102,3 +92,81 @@ minijava-compiler/
     ├── Table.java               # Scoped symbol table
     └── Symbol.java              # Symbol implementation
 ```
+
+## Building the Compiler
+
+### Prerequisites
+
+- **JDK 8 or higher** (tested with JDK 17 and JDK 21)
+- **JavaCC** (Java Compiler Compiler) - for parser generation
+
+```bash
+# Build everything (parser + type checker)
+make all
+
+# Build only the parser
+make parser
+
+# Build main components
+make main
+
+# Clean compiled .class files
+make clean
+
+# Clean everything including generated parser files
+make realclean
+```
+
+## Usage
+
+The compiler reads MiniJava source code from **standard input** (stdin). You must use input redirection or pipes.
+
+### Running the Full Compiler (with Type Checking)
+
+```bash
+# Using input redirection
+java Semant.Main < your_program.java
+
+# Using cat and pipe
+cat your_program.java | java Semant.Main
+```
+
+### Running Just the Parser
+
+```bash
+# Parse only (no type checking)
+java Parse.Main < your_program.java
+```
+
+### Example
+
+Try the included sample file:
+
+```bash
+java Semant.Main < inputfile.java
+```
+
+This will:
+
+1. Tokenize the input
+2. Parse and build the Abstract Syntax Tree (AST)
+3. Run four-pass type checking
+4. Output the AST structure
+
+## Example MiniJava Program
+
+```java
+class HelloWorld {
+    public static void main(String[] args) {
+        Xinu.println();
+        Xinu.print("Hello from MiniJava!");
+    }
+}
+```
+
+## Important Notes
+
+- **Frontend Only**: This compiler performs lexical analysis, parsing, and semantic analysis only. It does not generate executable code or bytecode.
+- **Target Platform**: MiniJava programs are designed to run on the Embedded Xinu Operating System, but the compiler itself runs on any system with a JDK.
+- **No Backend**: No code generation or optimization passes are implemented.
+- **Input Method**: The compiler reads from stdin, not from command-line file arguments.

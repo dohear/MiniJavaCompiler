@@ -119,15 +119,13 @@ public class TypeChecker implements Absyn.TypeVisitor
 		xinuMethods.add(new Absyn.MethodDecl(null, false, "threadCreate",
 											 params, null, null, null));
 
-		for (Absyn.MethodDecl md : xinuMethods)	
-		{ 
-			System.out.println("I am in for loop " + md);
+		for (Absyn.MethodDecl md : xinuMethods)
+		{
 			visit(md);
 			}
-		for (FIELD m : xinuClass.methods)		
-		{ 
-			System.out.println("I am in for loop " + m);
-			xinuClass.instance.methods.put(m.type, m.name); 
+		for (FIELD m : xinuClass.methods)
+		{
+			xinuClass.instance.methods.put(m.type, m.name);
 			}
 	}
 
@@ -139,10 +137,7 @@ public class TypeChecker implements Absyn.TypeVisitor
 
 		classEnv.put("String", new CLASS("String"));
 		classEnv.put("Thread", new CLASS("Thread"));
-		System.out.println("xinu make");
 		makeXinuType();
-	
-		System.out.println("    ");
 
 		for (Absyn.ClassDecl c : ast.classes) {
 			/*
@@ -151,18 +146,13 @@ public class TypeChecker implements Absyn.TypeVisitor
 			* - Create incomplete class types for later use.
 			* - Check for duplicate class definitions and raise errors.
 			*/
-			System.out.println("I am in for loop " + c);
-			System.out.println("attempting to accept " + c.name);
 			currentClass = (CLASS)c.accept(this);
-			System.out.println("accepted " + currentClass.name);
 			if (classEnv.get(c.name) != null){
 				error(c, "class " + c.name + " already exists!");
 			}
 			classEnv.put(c.name, currentClass);
 			program.put(currentClass.instance, c.name);
 		}
-
-		System.out.println("I finished pass one");
 	
 		for (Absyn.ClassDecl c : ast.classes) {
 			/*
@@ -170,8 +160,7 @@ public class TypeChecker implements Absyn.TypeVisitor
 			* - Link child classes to their parent classes (if any).
 			* - Add fields and methods to each class.
 			* - Ensure parent classes exist and raise errors if not found.
-			*/ 
-			System.out.println("I am in for loop " + c);
+			*/
 			currentClass = classEnv.get(c.name);
 			if (c.parent != null){
 				if (classEnv.get(c.parent) == null) {
@@ -182,29 +171,15 @@ public class TypeChecker implements Absyn.TypeVisitor
 				currentClass.parent = parentClass;
 			}
 			RECORD currmethods = new RECORD();
-			System.out.println("I am in the middle of pass two");
 			for(Absyn.MethodDecl m : c.methods ){
-				System.out.println("I am in for loop " + m);
-				System.out.println("I am adding " + m.name + "to the currmethods");
 				Type methodType = m.accept(this);
-				// System.out.println();
-				// System.out.println(methodType.toString());
-				// currmethods.put(methodType, m.name);
-				// m.checktype.result = methodType;
-				//this is probably wrong and needs to happen later
 			}
-			System.out.println("I put the methods in the record");
 			RECORD currfields = new RECORD();
 			for(Absyn.VarDecl cf : c.fields){
-				System.out.println("I am in for loop " + cf);
 				Type fieldType = visitFields(cf);
-				System.err.println();
-				System.out.println(fieldType);
 				currfields.put(fieldType, cf.name);
 			}
 		}
-
-		System.out.println("I am done with pass two");
 
         if (errors > 0) return program;
 
@@ -215,21 +190,17 @@ public class TypeChecker implements Absyn.TypeVisitor
 		* - Merge inherited fields and methods from parent classes.
 		* - Ensure overridden methods match the parent types.
 		*/
-		System.out.println("I am in for loop " + c);
 			currentClass = classEnv.get(c.name);
 			CLASS parentClass = new CLASS(c.parent);
 			if (c.parent == null) {
-				System.out.println("parent is null, skipping");
 				continue;
 			}
-			System.out.println("checked if method has parent");
 			if((classEnv.get((c.parent))).parent.name == c.name){
 				error(ast, "you have cyclic inherritance, donut");
 				break;
 			}
-			
+
 			for (FIELD parentField : parentClass.fields) {
-				System.out.println("I am in for loop " + parentField);
 				FIELD overwritenField = currentClass.fields.get(parentField.name);
 				if (overwritenField != null) {
 					if (!overwritenField.type.equals(parentField.type)) {
@@ -242,7 +213,6 @@ public class TypeChecker implements Absyn.TypeVisitor
 			}
 
 			for (FIELD parentMethod : parentClass.methods) {
-				System.out.println("I am in for loop " + parentMethod);
 				FIELD overwritenMethod = currentClass.methods.get(parentMethod.name);
 				if (overwritenMethod != null) {
 					if (!parentMethod.type.equals(overwritenMethod.type)) {
@@ -255,8 +225,6 @@ public class TypeChecker implements Absyn.TypeVisitor
 			}
 			mergeParents(parentClass, currentClass.instance);
 		}
-
-		System.out.println("i am done with pass 3");
 		
         if (errors > 0) return program;
 
@@ -268,96 +236,76 @@ public class TypeChecker implements Absyn.TypeVisitor
 			*/
 		for (Absyn.ClassDecl c : ast.classes)
 	    {
-			System.out.println("I am in for loop " + c);
 			currentClass = classEnv.get(c.name);
 			classEnv.beginScope();
-			
 
 			for(Absyn.MethodDecl m : c.methods)
 			{
-				System.out.println("I am in for loop " + m);
 				// Get the current method and its declared type
 				Type returnType = m.checktype.result;
 				if (returnType == null) {
 					error(m, "Method " + m.name + " has an invalid declaration");
 				}
-				 
+
 				varEnv.beginScope();
 
 				// Check Parameters:
 				for(Absyn.Formal p : m.params){
-					System.out.println("I am in for loop " + p);
 					Type paramType = p.checktype;
 					// Add Parameter.
 					varEnv.put(p.name, paramType);
-					
 				}
 
-				System.out.println("finished checking parameters");
-				//Check Statements: 
-
+				//Check Statements:
 				for (Absyn.VarDecl locals : m.locals){
-					System.out.println("I am in for loop " + locals);
-					System.out.println(locals.checktype);
 					// TODO: here lies the issue
 					// abandon all hope, yee who enter here
 					visitFields(locals);
 					//locals.accept(this);
-					System.out.println(locals.checktype);
 				}
 
 				for(Absyn.Stmt stmt : m.stmts)
 				{
-					System.out.println("I am in for loop " + stmt);
 					stmt.accept(this);
 				}
-				System.out.println("finished checking statements");
 				// Check Special Case (main):
 				if (!m.name.equals("main"))
 				{
-					System.out.println("method is not main");
 					// For all methods except "main", validate return type
-					Type expectedReturn = currentMethod.result; 
-					Type actualReturn = m.returnVal.accept(this); 
+					Type expectedReturn = currentMethod.result;
+					Type actualReturn = m.returnVal.accept(this);
 					if (actualReturn != expectedReturn)
 					{
 						error(m, "Return type of method " + m.name + " does not match its declaration. Expected: " + expectedReturn + ", Found: " + actualReturn);
 					}
 				}
-				else 
+				else
 				{
-					System.out.println("finished checking parameters" + m.name);
 					// Special case for "main": Ensure no return type
-					if (m.checktype.result != VOID) 
+					if (m.checktype.result != VOID)
 					{
-						System.out.println("return type not void");
 						error(m, "Main method must have a return type of VOID");
 					}
 				}
-				System.out.println("finished checking main");
 				varEnv.endScope();
 			}
 			classEnv.endScope();
 			}
-			System.out.println("Type Checker Has Finished");
 			return program;
 	}
-    public Type visit(Absyn.ClassDecl ast) 
+    public Type visit(Absyn.ClassDecl ast)
     {
-		// This method processes class declarations by associating the class name with a 
-		// new `CLASS` type object. The class type is then registered in the `classEnv` 
-		// to make it accessible throughout the program. Ensure that every class declaration 
+		// This method processes class declarations by associating the class name with a
+		// new `CLASS` type object. The class type is then registered in the `classEnv`
+		// to make it accessible throughout the program. Ensure that every class declaration
 		// is correctly typed and added to the environment without conflicts.
-		System.out.println("I am in visit class decl");
-		// Step 1: Check if the class name already exists in the environment 
+		// Step 1: Check if the class name already exists in the environment
 		if (classEnv.get(ast.name) != null) {
 			// Report an error if there's a naming conflict
 			error(ast, "class already exists!");
 		}
 		// Step 2: Create a new CLASS type object for the class
 		CLASS currClass = new CLASS(ast.name);
-		System.out.println("created class object: " + currClass.name);
-		System.out.println("accepted here" + currClass.name);
 		// Step 4: Return the type of the class declaration (could be `null` if not needed)
 		ast.checktype = currClass;
 		return currClass;
@@ -384,7 +332,6 @@ public class TypeChecker implements Absyn.TypeVisitor
 		// Add fields and methods to the thread class
 		// Process the list of fields
 		for (Absyn.VarDecl field : ast.fields) {
-			System.out.println("I am in for loop " + field);
 			Type fieldType = field.type.accept(this); // Type-check the field's type
 			if (fieldType != null) {
 				threadClass.fields.put(fieldType, field.name);
@@ -393,7 +340,6 @@ public class TypeChecker implements Absyn.TypeVisitor
 
 		// Process the list of methods
 		for (Absyn.MethodDecl method : ast.methods) {
-			System.out.println("I am in for loop " + method);
 			FUNCTION methodType = (FUNCTION) method.accept(this); // Type-check the method
 			if (methodType != null) {
 				threadClass.methods.put(methodType, method.name);
@@ -408,19 +354,17 @@ public class TypeChecker implements Absyn.TypeVisitor
 			
     }
 
-    public Type visit(Absyn.MethodDecl ast) 
-    { 
-	// This method handles method declarations by assigning types to return values and 
-	// parameters, and adding them to the current class’s method environment. A `FUNCTION` 
-	// object is created to represent the method. 
+    public Type visit(Absyn.MethodDecl ast)
+    {
+	// This method handles method declarations by assigning types to return values and
+	// parameters, and adding them to the current class's method environment. A `FUNCTION`
+	// object is created to represent the method.
 	//
 
-		System.out.println("i am in methoddecl visiting " + ast.name);
 		// check if method already exists
 		if (currentClass.methods.get(ast.name) != null) {
 			error(ast, "Method " + ast.name + " is already defined in class " + currentClass.name);
-		} 
-		System.out.println("I checked if the method already exists");
+		}
 		Type returnType;
 
 		if(ast.returnType != null){
@@ -430,37 +374,29 @@ public class TypeChecker implements Absyn.TypeVisitor
 			returnType = VOID;
 		}
 
-		System.out.println("I got the return type");
 		// Create a Record for storing the param types
 		RECORD paramTypes = new RECORD();
 
-		
+
 		FUNCTION method = new FUNCTION(ast.name, currentClass.instance, paramTypes, returnType);
-		
+
 		//set method decl.checktype (likely returntype) ??
 		ast.checktype = method;
 
 		// Add the method to the current class's method environment
-		if(currentClass.methods.get(method.name) == null)
-			System.out.println("I AM WRONG");
 		currentClass.methods.put(method, ast.name);
 
-		System.out.println("I put the method in the current class");
 		// For each param, get its type and stores in the record
 		for (Absyn.Formal param : ast.params) {
-			System.out.println("I am in for loop " + param);
 			Type paramType = visit(param);
 			paramTypes.put(paramType, param.name); // Add to RECORD
 		}
-		System.out.println("I stored params in the record");
 		// Add params to the var environment
 		for (Absyn.Formal param : ast.params) {
-			System.out.println("I am in for loop " + param);
 			Type paramType = visit(param);
-			System.out.println("param type: " );
 			varEnv.put(param.name, paramType);
 		}
-		
+
 		// Return the method
 		return method;
 	}
@@ -486,7 +422,6 @@ public class TypeChecker implements Absyn.TypeVisitor
     // Process parameters
 	// For each param, get its type and stores in the record
 	for (Absyn.Formal param : ast.params) {
-		System.out.println("I am in for loop " + param);
 			Type paramType = param.type.accept(this);
 			if (method.formals.get(param.name) != null){
 				error(param, "Duplicate parameter " + param.name + " in method " + methodName);
@@ -497,7 +432,6 @@ public class TypeChecker implements Absyn.TypeVisitor
 
 	// Add params to the var environment
 	for (Absyn.Formal param : ast.params) {
-		System.out.println("I am in for loop " + param);
 		Type paramType = param.type.accept(this);
 		if ( varEnv.get(param.name) != null){
 			error(ast, "repeat param: " + param.name);
@@ -508,25 +442,23 @@ public class TypeChecker implements Absyn.TypeVisitor
     return method;
 }
 
-    public Type visitFields(Absyn.VarDecl ast) 
-    { 
+    public Type visitFields(Absyn.VarDecl ast)
+    {
 		/*
 		* Handle field declarations in classes
 		* - Determine the field's type using the `accept` method.
-		* - Assign the type to the field’s `checktype`.
+		* - Assign the type to the field's `checktype`.
 		* - Register the field in the class environment, raising an error for name conflicts.
 		*/
 		// Get field type
-		System.out.println("   ");
-		System.out.println("   ");
-		Type fieldType = ast.type.accept(this); 
+		Type fieldType = ast.type.accept(this);
 
 		// checking if the field type is valid
 		if (fieldType == null) {
 			error(ast, "Field " + ast.name + " has an invalid type");
 		}
 
-		// assigning type to field’s `checktype`
+		// assigning type to field's `checktype`
 		ast.checktype = fieldType;
 
 		// check if name conflicts with previously defined fields
@@ -541,16 +473,12 @@ public class TypeChecker implements Absyn.TypeVisitor
 		return fieldType;
     }
 
-    public Type visit(Absyn.VarDecl ast) 
+    public Type visit(Absyn.VarDecl ast)
     {
-		System.out.println("in var decl");
-		System.out.println();
 		Type varType = ast.type.accept(this);
-		System.out.println("JACK: "+ varType.toString());
 		ast.checktype = varType;
 		varEnv.put(ast.name, varType);
 		checkType(varType, ast.init.accept(this), ast);
-		System.out.println("");
 		return varType;
     }
 	
@@ -572,12 +500,10 @@ public class TypeChecker implements Absyn.TypeVisitor
         mergeParents(parent.parent, instance);
 		for (FIELD f : parent.fields)
 	    {
-			System.out.println("I am in for loop " + f);
 			//instance.fields.put(f.type, f.name);
 	    }
 		for (FIELD m : parent.methods)
 	    {
-			System.out.println("I am in for loop " + m);
 			FIELD old = instance.methods.get(m.name);
 			//if (old == null) instance.methods.put(m.type, m.name);
 			//else old.type = m.type;
@@ -588,15 +514,13 @@ public class TypeChecker implements Absyn.TypeVisitor
     {
 		for (Object o : list)
 	    {
-			System.out.println("I am in for loop " + o);
 			((Absyn.Visitable)o).accept(this);
 	    }
-		return null; 
+		return null;
     }
 
     /* The Statements */
     public Type visit(Absyn.AssignStmt ast){
-		System.out.println("in assstmt");
 		Type var = ast.lhs.accept(this);
 		Type expr = ast.rhs.accept(this);
 		checkType(var, expr, ast);
@@ -604,22 +528,20 @@ public class TypeChecker implements Absyn.TypeVisitor
     }
     public Type visit(Absyn.BlockStmt ast){
 		for(Absyn.Stmt stmt : ast.stmts){
-			System.out.println("I am in a for loop " + stmt);
 			stmt.accept(this);
 		}
 		return VOID;
     }
     public Type visit(Absyn.IfStmt ast)
-    { 
+    {
 		/*
 		* Handle `if` statements and type-check branches
-		* - Ensure the condition evaluates to `BOOLEAN` 
+		* - Ensure the condition evaluates to `BOOLEAN`
 		* - Visit the "then" branch to confirm it is valid.
 		* - If an "else" branch exists, visit and validate it.
 		* - Return `VOID` since `if` statements do not produce a value.
 		*/
 		Type conditionType = ast.test.accept(this);
-		System.out.println("condition type " +conditionType);
 		if(!conditionType.equals(BOOLEAN)){
 			error(ast, "not boolean");}
 		if (ast.thenStm != null){
@@ -808,9 +730,8 @@ public class TypeChecker implements Absyn.TypeVisitor
 
     public Type visit(Absyn.Formal ast)
     {
-		System.out.println("i am in formaldecl");	
 		ast.checktype = ast.type.accept(this);
-		return ast.checktype; 
+		return ast.checktype;
     }
 
 public Type visit(Absyn.IdentifierExpr ast) 
@@ -826,11 +747,10 @@ public Type visit(Absyn.IdentifierExpr ast)
 }
 
     public Type visit(Absyn.NewArrayExpr ast)
-    { 
+    {
 		Type t = ast.type.accept(this);
 		for (Absyn.Expr e : ast.dimensions)
 	    {
-			System.out.println("I am in for loop " + e);		
 			if (null != e) checkType(e.accept(this), INT, ast);
 			t = new ARRAY(t);
 	    }

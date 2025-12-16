@@ -2,7 +2,7 @@ PARSER   = MiniJava
 
 JAVAC    = javac
 JAVA     = java
-JAVACC   = javacc
+JAVACC   = javacc-7.0.13
 JJDOC    = jjdoc
 
 JAVACC_FLAGS = -NOSTATIC -OUTPUT_DIRECTORY=Parse/
@@ -43,4 +43,4 @@ clean:
 	rm -f $(SRCS:.java=.class) ${JAVACCGEN} $(JAVACCGEN:.java=.class)
 
 realclean: clean
-	rm -f/.class~ /~ *.jar
+	rm -f *.class~ *~ *.jar
