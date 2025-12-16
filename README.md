@@ -131,21 +131,6 @@ java Semant.Main < your_program.java
 cat your_program.java | java Semant.Main
 ```
 
-### Running Just the Parser
-
-```bash
-# Parse only (no type checking)
-java Parse.Main < your_program.java
-```
-
-### Example
-
-Try the included sample file:
-
-```bash
-java Semant.Main < inputfile.java
-```
-
 This will:
 
 1. Tokenize the input
@@ -153,20 +138,11 @@ This will:
 3. Run four-pass type checking
 4. Output the AST structure
 
-## Example MiniJava Program
 
-```java
-class HelloWorld {
-    public static void main(String[] args) {
-        Xinu.println();
-        Xinu.print("Hello from MiniJava!");
-    }
-}
+### Running Just the Parser
+
+```bash
+# Parse only (no type checking)
+java Parse.Main < your_program.java
 ```
 
-## Important Notes
-
-- **Frontend Only**: This compiler performs lexical analysis, parsing, and semantic analysis only. It does not generate executable code or bytecode.
-- **Target Platform**: MiniJava programs are designed to run on the Embedded Xinu Operating System, but the compiler itself runs on any system with a JDK.
-- **No Backend**: No code generation or optimization passes are implemented.
-- **Input Method**: The compiler reads from stdin, not from command-line file arguments.
