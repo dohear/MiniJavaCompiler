@@ -359,8 +359,7 @@ Absyn.VarDecl VarDeclaration() :
 	Absyn.Expr init = null;
 }
 {
-	//?????????? ("[" (<INTEGER_LITERAL>)? "]")? lookahead???
-	type = Type() name = <ID> ("[" (<INTEGER_LITERAL>)?"]")* ("=" init = Expression())? ";"
+	type = Type() name = <ID> ("=" init = Expression())? ";"
 	{ return new Absyn.VarDecl(type, name.toString(), init); }
 }
 
@@ -497,23 +496,14 @@ Absyn.Type Type():
 {
     (
 	   "void" {type = new Absyn.IdentifierType("Void");}
-    |  "int" 
-      (
-        ("[" (<INTEGER_LITERAL>)?"]")+ { type = new Absyn.ArrayType(new Absyn.IntegerType()); }  // Handle int arrays
-      | { type = new Absyn.IntegerType(); }  // Handle int type
-      )
-    | "boolean" 
-      (
-        ("[" (<INTEGER_LITERAL>)?"]")+ { type = new Absyn.ArrayType(new Absyn.BooleanType()); }  // Handle boolean arrays
-      | { type = new Absyn.BooleanType(); }  // Handle boolean type
-      )
-    | id = <ID>
-      (
-        ("[" (<INTEGER_LITERAL>)?"]")+ { type = new Absyn.ArrayType(new Absyn.IdentifierType(id.toString())); }  // Handle user-defined array types
-      | { type = new Absyn.IdentifierType(id.toString()); }  // Handle user-defined types
-      )
+    |  "int" { type = new Absyn.IntegerType(); }
+       ( LOOKAHEAD(2) "[" "]" { type = new Absyn.ArrayType(type); } )*
+    | "boolean" { type = new Absyn.BooleanType(); }
+      ( LOOKAHEAD(2) "[" "]" { type = new Absyn.ArrayType(type); } )*
+    | id = <ID> { type = new Absyn.IdentifierType(id.toString()); }
+      ( LOOKAHEAD(2) "[" "]" { type = new Absyn.ArrayType(type); } )*
     )
-    { return type; } // Ensure the method reaches here
+    { return type; }
 }
 
 Absyn.Expr Expression():
@@ -521,7 +511,7 @@ Absyn.Expr Expression():
     Absyn.Expr expr;
 }
 {
-    expr = AlphaExpression() ExpressionPrime(expr) 
+    expr = AlphaExpression() expr = ExpressionPrime(expr)
     { return expr; }
 }
 

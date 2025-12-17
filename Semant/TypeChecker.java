@@ -256,12 +256,10 @@ public class TypeChecker implements Absyn.TypeVisitor
 					varEnv.put(p.name, paramType);
 				}
 
-				//Check Statements:
+				//Check Local Variables:
 				for (Absyn.VarDecl locals : m.locals){
-					// TODO: here lies the issue
-					// abandon all hope, yee who enter here
-					visitFields(locals);
-					//locals.accept(this);
+					// Process local variables and add them to the variable environment
+					locals.accept(this);
 				}
 
 				for(Absyn.Stmt stmt : m.stmts)
@@ -542,7 +540,7 @@ public class TypeChecker implements Absyn.TypeVisitor
 		* - Return `VOID` since `if` statements do not produce a value.
 		*/
 		Type conditionType = ast.test.accept(this);
-		if(!conditionType.equals(BOOLEAN)){
+		if(!(conditionType instanceof BOOLEAN)){
 			error(ast, "not boolean");}
 		if (ast.thenStm != null){
 			ast.thenStm.accept(this);}
@@ -562,17 +560,17 @@ public class TypeChecker implements Absyn.TypeVisitor
 		return new OBJECT(new CLASS(ast.method));
 	}
 
-	public Type visit(Absyn.WhileStmt ast) 
-	{ 
+	public Type visit(Absyn.WhileStmt ast)
+	{
 		Type conditionType = ast.test.accept(this);
 
-		if (conditionType != BOOLEAN) {
+		if (!(conditionType instanceof BOOLEAN)) {
 			error(ast.test, "test type must be boolean");
 		}
 
 		Type bodyType = ast.body.accept(this);
 
-		return bodyType;
+		return VOID;
 	}
 
 	private Type visit(Absyn.BinOpExpr e, String op, Type t, Type rt) 
@@ -620,30 +618,29 @@ public class TypeChecker implements Absyn.TypeVisitor
     { return visit(ast, "<", INT, BOOLEAN); }
 
     public Type visit(Absyn.NotEqExpr ast) { return visit(ast, "!="); }
-	public Type visit(Absyn.NotExpr ast) 
-	{ 
-		// This method processes logical negation expressions (`!`). 
+	public Type visit(Absyn.NotExpr ast)
+	{
+		// This method processes logical negation expressions (`!`).
 		// It ensures that the operand is of type `BOOLEAN`.
 		// If the operand's type is incompatible, an error is raised.
 		// The result of this expression is always `BOOLEAN`.
-		Type operandType = ast.accept(this);
-        if(!operandType.equals(BOOLEAN)){
-            error(ast,null);
+		Type operandType = ast.e1.accept(this);
+        if(!(operandType instanceof BOOLEAN)){
+            error(ast, "operand of ! must be boolean");
         }
         return BOOLEAN;
     }
 
 
-	public Type visit(Absyn.NegExpr ast) 
-	{ 
-		//
-		// This method handles arithmetic negation expressions (`-`). 
+	public Type visit(Absyn.NegExpr ast)
+	{
+		// This method handles arithmetic negation expressions (`-`).
 		// It ensures that the operand is of type `INT`.
 		// If the operand's type is not compatible, an error is raised.
 		// The result of this expression is always `INT`.
-		Type operandType = ast.accept(this);
-        if(!operandType.equals(INT)){
-            error(ast,null);
+		Type operandType = ast.e1.accept(this);
+        if(!(operandType instanceof INT)){
+            error(ast, "operand of unary - must be int");
         }
         return INT;
 	}
@@ -653,14 +650,18 @@ public class TypeChecker implements Absyn.TypeVisitor
 		return visit(ast, "||", BOOLEAN); 
 	}
 
-    public Type visit(Absyn.ArrayExpr ast) 
-    { 
+    public Type visit(Absyn.ArrayExpr ast)
+    {
 		Type target = ast.target.accept(this);
 		if(!(target instanceof ARRAY)){
 			error(ast, "target not array type " + target);
 			return VOID;
 		}
-		return target;
+		// Check that index is an integer
+		Type indexType = ast.index.accept(this);
+		checkType(indexType, INT, ast.index);
+		// Return the element type, not the array type
+		return ((ARRAY)target).element;
 
     }
 
@@ -787,9 +788,16 @@ public Type visit(Absyn.IdentifierExpr ast)
 		return new ARRAY(ast.base.accept(this));
 	}
 
-    public Type visit(Absyn.IdentifierType ast) 
-    { 
-		return new OBJECT(new CLASS(ast.id));
+    public Type visit(Absyn.IdentifierType ast)
+    {
+		// Look up the class in the class environment
+		CLASS cls = classEnv.get(ast.id);
+		if (cls == null) {
+			// If class not found, create a placeholder (for forward references)
+			return new OBJECT(new CLASS(ast.id));
+		}
+		// Return the instance type of the class
+		return cls.instance;
     }
 
     public Type visit(Absyn.IntegerType ast)    { return new INT(); }
