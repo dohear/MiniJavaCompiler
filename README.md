@@ -1,3 +1,7 @@
+# Fixed2025?
+
+When my Compiler Construction course wrapped up in the fall of 2024, my MiniJava Compilers front end was still pretty rough around the edges, the type checker wasnt quite fully functional, and could crash/hang under certain circumstances implementation and and the parser had a few bugs to work our (mostly with 2d arrays). Though I may have left this project for a while, my knowledge of and love for compilers has only grown. Unable to let this unfinished project go, I returned to it a year later in December 2025 to finish the front end. I decided to leave the main branch an honest representation of what I was able to acheive that semester and pushed the complete version to a seperate "Fixed2025" branch.
+
 # MiniJava Compiler
 
 This is a complete frontend for a MiniJava Compiler written in Java targeting specifically the Embedded Xinu Operating System. The front end includes a tokenizer, parser/syntactic analyzer, and a four-pass type checker. This was written for my compiler course taken at Marquette University (COSC 4400, fall 24) as a part of a group effort alongside Erik Gutierrez, Varisha Asim, and myself with guidance from our professor Dr.Jack Forden.
